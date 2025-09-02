@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Berpikir Komputasional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .question-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .option-btn {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .option-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .correct {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            border-color: #16a34a;
+        }
+        .incorrect {
+            background: linear-gradient(135deg, #f87171, #ef4444);
+            border-color: #dc2626;
+        }
+        .score-display {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 15px;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">?? Kuis Berpikir Komputasional</h1>
+            <p class="text-gray-600">Uji pemahaman Anda tentang dekomposisi, algoritma, dan pengenalan pola</p>
+        </div>
+
+        <!-- Student Info Form -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">?? Informasi Siswa</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="studentName" class="block text-sm font-medium text-gray-700 mb-2">Nama:</label>
+                    <input type="text" id="studentName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Masukkan nama lengkap">
+                </div>
+                <div>
+                    <label for="studentClass" class="block text-sm font-medium text-gray-700 mb-2">Kelas:</label>
+                    <input type="text" id="studentClass" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Contoh: XII IPA 1">
+                </div>
+            </div>
+        </div>
+
+        <!-- Score Display -->
+        <div class="score-display text-center p-4 mb-6 text-white font-semibold text-xl">
+            <span>Skor: </span><span id="score">0</span> / <span id="totalQuestions">25</span>
+            <span class="ml-4">Poin: </span><span id="points">0</span>
+        </div>
+
+        <!-- Quiz Container -->
+        <div id="quizContainer" class="space-y-8">
+            <!-- Questions will be dynamically inserted here -->
+        </div>
+
+        <!-- Results -->
+        <div id="results" class="hidden text-center mt-8 p-6 bg-white rounded-xl shadow-lg">
+            <h2 class="text-2xl font-bold mb-4">?? Kuis Selesai!</h2>
+            <div id="studentInfo" class="mb-4 p-4 bg-gray-50 rounded-lg">
+                <p class="text-lg"><strong>Nama:</strong> <span id="displayName"></span></p>
+                <p class="text-lg"><strong>Kelas:</strong> <span id="displayClass"></span></p>
+            </div>
+            <p class="text-lg mb-4">Skor Akhir: <span id="finalScore" class="font-bold text-purple-600"></span></p>
+            <p class="text-lg mb-6">Total Poin: <span id="finalPoints" class="font-bold text-yellow-600"></span></p>
+            
+            <div class="space-y-4">
+                <button onclick="sendResultsToEmail()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors mr-4">
+                    ?? Kirim Hasil ke Guru
+                </button>
+                <button onclick="restartQuiz()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                    ?? Mulai Ulang
+                </button>
+            </div>
+            
+            <div id="emailStatus" class="mt-4 hidden">
+                <p class="text-green-600 font-semibold">? Hasil berhasil dikirim ke guru!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                id: 1,
+                question: "Dalam menyiapkan telur dadar untuk 4 orang dengan bahan dan peralatan terbatas di dapur keluarga kecil, jika Anda diminta untuk menerapkan prinsip dekomposisi berpikir komputasional agar proses persiapan menjadi lebih efisien dan terukur, langkah dekomposisi manakah di bawah ini yang paling sesuai karena membagi masalah menjadi unit kerja yang saling independen dan memungkinkan pembagian tugas antar anggota keluarga sambil mempertahankan urutan kritis yang tidak boleh dipecah?",
+                options: [
+                    "Menetapkan waktu memasak total, memperkirakan jumlah panci yang diperlukan, dan menentukan berapa porsi setiap anggota keluarga akan makan.",
+                    "Membagi proses menjadi: (1) persiapan bahan (mengocok telur, menyiapkan garam/merica), (2) persiapan peralatan (mengambil wajan, kompor, spatula), (3) memasak (menuang telur, membalik), dan (4) penyajian (memotong, menata), sekaligus menetapkan siapa menangani tiap sub-proses.",
+                    "Menghitung total kalori dan nilai gizi telur dadar untuk 4 orang lalu menyesuaikan bahan berdasarkan kebutuhan gizi individu.",
+                    "Menyusun daftar belanja lengkap agar semua bahan tersedia sebelum memasak dan menunda semua kegiatan lain sampai belanja selesai.",
+                    "Mencoba beberapa resep telur dadar secara bersamaan untuk membandingkan hasil akhir dan memilih yang terbaik."
+                ],
+                correctAnswer: 1,
+                explanation: "B paling sesuai sebagai dekomposisi karena membagi tugas menjadi sub-proses independen dengan urutan logis dan memungkinkan pembagian tugas, sedangkan pilihan lain fokus pada analisis gizi, logistik tunggal, atau eksplorasi tanpa pembagian tugas.",
+                points: 6
+            },
+            {
+                id: 2,
+                question: "Ketika merancang algoritma pembuatan telur dadar yang harus tahan terhadap variasi bahan (mis. tambahan sayur, keju, atau tanpa susu) dan berbeda jenis kompor di rumah teman, pendekatan algoritmatis manakah yang paling tepat untuk memastikan algoritma tetap fleksibel namun deterministik sehingga hasil akhir relatif konsisten walau kondisi input berubah?",
+                options: [
+                    "Menulis satu langkah tunggal \"masak sampai matang\" tanpa kondisi tambahan agar semua pengguna mengikuti langkah yang sama.",
+                    "Menyusun algoritma bersyarat yang mendefinisikan langkah dasar (kocok telur, panaskan wajan pada api sedang, tuang adonan) dan menambahkan cabang kondisi untuk variasi bahan (jika ada sayur maka tumis sayur dulu; jika ada keju maka tambahkan saat setengah matang; sesuaikan waktu jika kompor gas vs listrik).",
+                    "Menyusun empat algoritma terpisah masing-masing untuk setiap variasi bahan dan jenis kompor tanpa adanya kondisi bercabang.",
+                    "Mengandalkan intuisi dan pengalaman sebagai aturan lisan yang tidak tertulis sehingga tiap orang menyesuaikan secara ad hoc.",
+                    "Membuat algoritma acak yang memilih urutan langkah secara bergantian untuk melihat kombinasi mana yang memberi hasil terbaik."
+                ],
+                correctAnswer: 1,
+                explanation: "B menggunakan struktur algoritma bersyarat yang memungkinkan fleksibilitas terhadap input berbeda namun tetap deterministik dan dapat diikuti secara konsisten; opsi lain terlalu umum, terfragmentasi, atau acak.",
+                points: 6
+            },
+            {
+                id: 3,
+                question: "Dalam konteks pengenalan pola saat merencanakan liburan ke Bandung untuk keluarga besar yang telah bepergian beberapa kali ke kota berbeda, bagaimana Anda memanfaatkan pola perjalanan sebelumnya (misal waktu perjalanan terlama karena macet pada akhir pekan, preferensi akomodasi dekat kuliner, dan kecenderungan untuk melakukan aktivitas di pagi hari) untuk menghasilkan rencana perjalanan yang meminimalkan risiko keterlambatan dan meningkatkan kepuasan keseluruhan?",
+                options: [
+                    "Mengabaikan data perjalanan sebelumnya karena setiap liburan bersifat unik dan merencanakan secara spontan saat sampai di Bandung.",
+                    "Menggunakan pola yang dikenali untuk menyusun jadwal: berangkat di luar jam sibuk (mis. hari kerja pagi), memesan penginapan dekat pusat kuliner yang sering dikunjungi keluarga, dan menjadwalkan aktivitas utama pada pagi hari untuk mengurangi dampak macet serta antrian.",
+                    "Menjadwalkan semua aktivitas pada satu hari agar perjalanan singkat dan begitu tiba semua agenda selesai pada hari pertama.",
+                    "Memprioritaskan destinasi populer pada sore dan malam hari karena kemungkinan cuaca buruk di pagi hari.",
+                    "Memilih rute perjalanan yang panjang namun pemandangannya bagus tanpa mempertimbangkan pola kemacetan dari perjalanan sebelumnya."
+                ],
+                correctAnswer: 1,
+                explanation: "B memanfaatkan pengenalan pola dari perjalanan sebelumnya untuk mengurangi risiko (menghindari jam macet), meningkatkan kenyamanan (akomodasi strategis) dan merencanakan waktu aktivitas sesuai kebiasaan keluarga.",
+                points: 6
+            },
+            {
+                id: 4,
+                question: "Seorang siswa diminta mengevaluasi dua algoritma untuk membuat telur dadar: Algoritma X yang memprioritaskan kecepatan dengan langkah-langkah paralel sederhana namun berisiko hasil kurang rata, dan Algoritma Y yang lebih berurutan, termasuk langkah pemeriksaan suhu dan waktu istirahat adonan sehingga memakan waktu lebih lama namun hasil lebih konsisten; jika tujuan utama adalah mencapai kualitas maksimal untuk acara formal di mana waktu tidak kritis, mana analisis keputusan berbasis berpikir komputasional yang paling tepat untuk dipilih dan mengapa?",
+                options: [
+                    "Memilih Algoritma X karena kecepatan selalu lebih penting meskipun kualitas menurun.",
+                    "Memilih Algoritma Y karena evaluasi trade-off menunjukkan prioritas kualitas di atas kecepatan, sehingga langkah pemeriksaan suhu dan istirahat menambah kepastian hasil konsisten.",
+                    "Menggabungkan X dan Y secara acak untuk melihat hasil yang muncul.",
+                    "Menunda keputusan dan menggantungkan pada pendapat tamu tentang preferensi mereka pada hari H.",
+                    "Menggunakan Algoritma X pada tiga percobaan pertama lalu berpindah ke Y jika tamu mengkritik rasa."
+                ],
+                correctAnswer: 1,
+                explanation: "B menunjukkan analisis trade-off dengan prioritas tujuan (kualitas atas kecepatan), sehingga algoritma berurutan yang memeriksa kondisi lebih tepat untuk acara formal.",
+                points: 6
+            },
+            {
+                id: 5,
+                question: "Dalam penerapan abstraksi untuk membuat panduan singkat \"cara cepat membuat telur dadar tetap enak\" untuk dimasukkan dalam buku resep keluarga yang dibaca oleh anggota keluarga berusia berbeda-beda dan dengan alat dapur yang bervariasi, aspek mana yang harus Anda pertahankan dalam abstraksi agar panduan tetap berguna tanpa merinci semua variasi teknik memasak?",
+                options: [
+                    "Mencantumkan setiap variasi resep, jenis wajan, dan merek kompor agar semua kemungkinan tercakup.",
+                    "Memfokuskan abstraksi pada elemen esensial yang mempengaruhi hasil: rasio bahan utama (telur terhadap air/susu), suhu memasak (api sedang), tanda visual kematangan, dan langkah keselamatan dasar, sehingga pembaca dapat menerapkan pada peralatan yang berbeda.",
+                    "Hanya mencantumkan bahan dan waktu total masak tanpa penjelasan tanda kematangan atau suhu.",
+                    "Menyertakan foto tiap langkah tanpa teks supaya pembaca meniru secara visual.",
+                    "Menuliskan teori kimia perubahan protein telur agar pembaca memahami prosesnya secara mendalam."
+                ],
+                correctAnswer: 1,
+                explanation: "B adalah abstraksi yang mempertahankan aspek esensial yang mempengaruhi hasil sehingga panduan tetap aplikatif lintas kondisi, sementara opsi lain terlalu rinci, terlalu minim, atau berlebihan ilmiah.",
+                points: 6
+            },
+            {
+                id: 6,
+                question: "Dalam merencanakan rute perjalanan dari Jakarta ke Bandung dengan tujuan memaksimalkan waktu di objek wisata sambil meminimalkan kemungkinan tertunda karena pola kemacetan yang berulang, langkah analitis berpikir komputasional mana yang paling tepat untuk diambil sebelum menentukan jam keberangkatan, sehingga keputusan jadwal menjadi berbasis data dan adaptif?",
+                options: [
+                    "Berangkat kapan saja berdasarkan perasaan karena pola kemacetan sulit diprediksi.",
+                    "Mengumpulkan data pola lalu lintas historis (hari, jam, libur), menganalisis puncak kemacetan, membuat model sederhana yang memprediksi risiko keterlambatan untuk setiap jam keberangkatan, lalu memilih jam dengan risiko paling rendah sambil menyiapkan rencana cadangan jika keterlambatan terjadi.",
+                    "Mengandalkan saran satu teman yang pernah pulang kampung tanpa memeriksa data lain.",
+                    "Selalu berangkat malam untuk menghindari macet meski tujuan wisata lebih cocok dikunjungi pagi hari.",
+                    "Menggunakan peta tanpa mempertimbangkan waktu tempuh yang dipengaruhi arus lalu lintas."
+                ],
+                correctAnswer: 1,
+                explanation: "B menggunakan pengenalan pola dan abstraksi data untuk membuat keputusan berbasis bukti serta menyiapkan rencana cadangan, sehingga lebih adaptif dan efektif.",
+                points: 6
+            },
+            {
+                id: 7,
+                question: "Seorang guru ingin menilai kemampuan siswa dalam menerapkan berpikir komputasional dengan meminta mereka merancang rencana memasak telur dadar untuk 6 siswa di kelas yang masing-masing memiliki alergi berbeda; aktivitas penilaian manakah yang menunjukkan kombinasi terbaik antara dekomposisi masalah, abstraksi alergen esensial, dan pembuatan algoritma adaptif sehingga solusi siswa aman, efisien, dan dapat dieksekusi dalam waktu pelajaran?",
+                options: [
+                    "Meminta siswa menulis resep telur dadar umum tanpa mempertimbangkan alergi dan menilai berdasarkan rasa.",
+                    "Menugaskan siswa untuk: mengidentifikasi dan mengabstraksi alergen utama yang harus dihindari, mendekomposisi proses memasak menjadi stasiun terpisah (area pengocokan bebas allergen, area memasak khusus), dan menulis algoritma yang menyertakan pengecekan bahan sebelum setiap langkah serta prosedur pencegahan kontaminasi silang.",
+                    "Meminta siswa membeli makanan jadi di luar sekolah agar tidak mempedulikan alergi.",
+                    "Mengizinkan siswa membuat telur dadar mana pun tanpa pengawasan karena pembelajaran bersifat eksperimen.",
+                    "Menguji siswa hanya dengan kuis teori alergen tanpa praktik memasak."
+                ],
+                correctAnswer: 1,
+                explanation: "B menunjukkan integrasi dekomposisi (stasiun), abstraksi (identifikasi alergen esensial), dan algoritma adaptif (cek bahan & prosedur pencegahan), sehingga aman dan praktis.",
+                points: 6
+            },
+            {
+                id: 8,
+                question: "Dalam sebuah proyek merencanakan liburan ke Bandung yang melibatkan penggunaan sumber daya terbatas (mis. anggaran tetap, kendaraan tunggal) dan tujuan ganda (kepuasan maksimal dan kepatuhan terhadap jadwal pulang pada tujuan jam tertentu), model pengambilan keputusan berbasis berpikir komputasional mana yang paling tepat untuk menyusun prioritas aktivitas dan distribusi waktu sehingga target terpenuhi?",
+                options: [
+                    "Mengalokasikan semua anggaran pada satu aktivitas paling populer dan mengorbankan aktivitas lain sehingga kepuasan sebagian besar anggota tercapai walau jadwal menjadi longgar.",
+                    "Membuat model multi-kriteria yang mengkuantifikasi kepuasan setiap aktivitas, biaya, dan waktu yang dibutuhkan; kemudian menggunakan dekomposisi jadwal menjadi blok waktu dan optimisasi heuristik sederhana (mis. memilih kombinasi aktivitas dengan rasio kepuasan per waktu/biaya tertinggi) sambil memastikan buffer waktu untuk pulang tepat waktu.",
+                    "Menentukan prioritas berdasar opini terbanyak tanpa memperhitungkan waktu dan biaya.",
+                    "Menetapkan jadwal kaku tanpa buffer karena fleksibilitas dianggap menyebabkan pemborosan waktu.",
+                    "Menunda semua keputusan sampai hari keberangkatan untuk melihat kondisi aktual tanpa perencanaan sebelumnya."
+                ],
+                correctAnswer: 1,
+                explanation: "B menggunakan pendekatan berpikir komputasional (abstraksi metrik, dekomposisi, heuristik optimisasi) untuk menyeimbangkan kepuasan, biaya, dan waktu serta memastikan kepulangan tepat waktu.",
+                points: 6
+            },
+            {
+                id: 9,
+                question: "Berpikir komputasional adalah kemampuan untuk:",
+                options: [
+                    "Menghafal semua kode program",
+                    "Memecahkan masalah dengan cara yang sistematis dan logis",
+                    "Menggambar dengan komputer",
+                    "Mengetik dengan cepat",
+                    "Menggunakan internet tanpa batas"
+                ],
+                correctAnswer: 1,
+                explanation: "Berpikir komputasional adalah kemampuan untuk memecahkan masalah dengan cara yang sistematis dan logis, menggunakan konsep-konsep seperti dekomposisi, pengenalan pola, abstraksi, dan algoritma.",
+                points: 6
+            },
+            {
+                id: 10,
+                question: "Salah satu langkah dalam berpikir komputasional adalah:",
+                options: [
+                    "Mengabaikan masalah",
+                    "Membagi masalah menjadi bagian-bagian kecil",
+                    "Menyalin jawaban dari teman",
+                    "Menghindari penggunaan algoritma",
+                    "Menghapus data penting"
+                ],
+                correctAnswer: 1,
+                explanation: "Dekomposisi adalah salah satu langkah utama dalam berpikir komputasional, yaitu membagi masalah besar menjadi bagian-bagian kecil yang lebih mudah dipahami dan diselesaikan.",
+                points: 6
+            },
+            {
+                id: 11,
+                question: "Ketika Anda ingin menampilkan data dalam bentuk batang horizontal yang memudahkan perbandingan antar kategori di Microsoft Excel, jenis grafik manakah yang biasanya digunakan?",
+                options: [
+                    "Grafik Pie",
+                    "Grafik Line",
+                    "Grafik Bar",
+                    "Grafik Scatter",
+                    "Grafik Area"
+                ],
+                correctAnswer: 2,
+                explanation: "Grafik Bar (batang horizontal) digunakan untuk menampilkan data dalam bentuk batang horizontal yang memudahkan perbandingan antar kategori.",
+                points: 1
+            },
+            {
+                id: 12,
+                question: "Jika Anda ingin menggambarkan proporsi atau persentase dari keseluruhan data dalam bentuk visual yang menyerupai potongan-potongan sebuah lingkaran, jenis grafik apa yang sebaiknya Anda pilih di Excel?",
+                options: [
+                    "Grafik Column",
+                    "Grafik Bar",
+                    "Grafik Line",
+                    "Grafik Pie (Circle)",
+                    "Grafik Scatter"
+                ],
+                correctAnswer: 3,
+                explanation: "Grafik Pie (lingkaran) digunakan untuk menampilkan proporsi atau persentase dari keseluruhan data dalam bentuk potongan-potongan lingkaran.",
+                points: 1
+            },
+            {
+                id: 13,
+                question: "Sebelum membuat grafik kolom di Excel, langkah awal yang harus Anda lakukan agar grafik dapat menampilkan data dengan benar adalah:",
+                options: [
+                    "Mengetik data di aplikasi Microsoft Word",
+                    "Memilih atau menyorot data yang ingin Anda visualisasikan dalam grafik",
+                    "Menyimpan file Excel dalam format PDF",
+                    "Menghapus data yang tidak diperlukan",
+                    "Menyalin data ke aplikasi PowerPoint"
+                ],
+                correctAnswer: 1,
+                explanation: "Sebelum membuat grafik, langkah pertama adalah memilih atau menyorot data yang ingin divisualisasikan agar grafik dapat menampilkan data dengan benar.",
+                points: 1
+            },
+            {
+                id: 14,
+                question: "Grafik garis (line chart) di Excel biasanya digunakan untuk menampilkan tren atau perubahan nilai data yang terjadi secara berurutan dalam rentang waktu tertentu. Manakah dari pernyataan berikut yang paling tepat menggambarkan fungsi utama grafik ini?",
+                options: [
+                    "Menampilkan perbandingan kategori secara diskrit tanpa urutan waktu",
+                    "Menunjukkan perubahan data dari waktu ke waktu secara berkelanjutan",
+                    "Menampilkan proporsi data dalam satu set secara keseluruhan",
+                    "Menampilkan data yang tidak memiliki urutan atau pola tertentu",
+                    "Menampilkan data berupa teks saja tanpa angka"
+                ],
+                correctAnswer: 1,
+                explanation: "Grafik garis (line chart) digunakan untuk menunjukkan perubahan data dari waktu ke waktu secara berkelanjutan dan menampilkan tren data.",
+                points: 1
+            },
+            {
+                id: 15,
+                question: "Setelah Anda membuat sebuah grafik di Excel, jika Anda ingin mengganti jenis grafik tersebut menjadi tipe lain yang lebih sesuai dengan kebutuhan presentasi data Anda, menu atau fitur manakah yang harus Anda gunakan?",
+                options: [
+                    "Insert > Table",
+                    "Design > Change Chart Type",
+                    "Home > Font",
+                    "Data > Sort",
+                    "Review > Spelling"
+                ],
+                correctAnswer: 1,
+                explanation: "Untuk mengganti jenis grafik yang sudah dibuat, gunakan menu Design > Change Chart Type untuk memilih tipe grafik yang lebih sesuai.",
+                points: 1
+            },
+            {
+                id: 16,
+                question: "Grafik kolom di Excel menampilkan data dalam bentuk batang yang berdiri tegak lurus ke atas, sehingga memudahkan perbandingan nilai antar kategori secara vertikal. Pernyataan ini menjelaskan bahwa grafik kolom menggunakan bentuk:",
+                options: [
+                    "Garis horizontal",
+                    "Garis vertikal",
+                    "Batang vertikal",
+                    "Lingkaran",
+                    "Titik-titik"
+                ],
+                correctAnswer: 2,
+                explanation: "Grafik kolom menggunakan batang vertikal yang berdiri tegak lurus ke atas untuk menampilkan data dan memudahkan perbandingan antar kategori.",
+                points: 1
+            },
+            {
+                id: 17,
+                question: "Untuk menambahkan judul pada grafik yang telah Anda buat di Excel agar lebih informatif dan mudah dipahami pembaca, langkah yang harus dilakukan adalah:",
+                options: [
+                    "Klik grafik, lalu pilih Chart Elements (+) dan centang Chart Title",
+                    "Klik kanan pada grafik dan pilih Delete",
+                    "Tekan tombol Ctrl+C untuk menyalin grafik",
+                    "Pilih menu File > Save As",
+                    "Klik grafik dan tekan tombol Delete"
+                ],
+                correctAnswer: 0,
+                explanation: "Untuk menambahkan judul grafik, klik grafik terlebih dahulu, kemudian pilih Chart Elements (+) dan centang Chart Title untuk menampilkan kotak judul.",
+                points: 1
+            },
+            {
+                id: 18,
+                question: "Ketika Anda ingin mengubah warna batang atau kolom dalam grafik Excel agar lebih menarik dan sesuai dengan tema presentasi, fitur yang harus digunakan adalah:",
+                options: [
+                    "Format Data Series atau klik kanan pada batang/kolom dan pilih Format Data Series",
+                    "Insert > Table",
+                    "Home > Cut",
+                    "Data > Filter",
+                    "Review > Comments"
+                ],
+                correctAnswer: 0,
+                explanation: "Untuk mengubah warna batang/kolom grafik, gunakan Format Data Series yang dapat diakses dengan klik kanan pada batang/kolom atau melalui panel formatting.",
+                points: 1
+            },
+            {
+                id: 19,
+                question: "Jika data dalam spreadsheet Excel berubah setelah Anda membuat grafik, apa yang akan terjadi pada grafik tersebut?",
+                options: [
+                    "Grafik akan terhapus secara otomatis",
+                    "Grafik akan tetap menampilkan data lama dan tidak berubah",
+                    "Grafik akan otomatis terupdate sesuai dengan perubahan data",
+                    "Grafik akan berubah menjadi tabel",
+                    "Grafik akan pindah ke sheet lain"
+                ],
+                correctAnswer: 2,
+                explanation: "Grafik di Excel memiliki hubungan dinamis dengan data sumbernya, sehingga akan otomatis terupdate ketika data dalam spreadsheet berubah.",
+                points: 1
+            },
+            {
+                id: 20,
+                question: "Untuk menyimpan grafik Excel sebagai gambar terpisah (misalnya format PNG atau JPEG) yang dapat digunakan di aplikasi lain, langkah yang benar adalah:",
+                options: [
+                    "Klik grafik, lalu Ctrl+C, buka Paint dan Paste, kemudian Save As dengan format gambar",
+                    "Pilih File > Print",
+                    "Klik grafik dan tekan Delete",
+                    "Pilih Insert > Picture",
+                    "Gunakan menu Data > Sort"
+                ],
+                correctAnswer: 0,
+                explanation: "Untuk menyimpan grafik sebagai gambar, copy grafik (Ctrl+C), paste di aplikasi seperti Paint, kemudian save dengan format gambar yang diinginkan (PNG, JPEG, dll).",
+                points: 1
+            },
+            {
+                id: 21,
+                question: "Fungsi utama fitur sortir di Excel adalah untuk:",
+                options: [
+                    "Menghapus data yang tidak diperlukan",
+                    "Mengurutkan data berdasarkan kriteria tertentu",
+                    "Menyalin data ke lembar kerja lain",
+                    "Membuat grafik otomatis",
+                    "Mengunci sel agar tidak bisa diedit"
+                ],
+                correctAnswer: 1,
+                explanation: "Fitur sortir di Excel berfungsi untuk mengurutkan data berdasarkan kriteria tertentu, seperti mengurutkan dari A-Z, Z-A, atau berdasarkan nilai numerik dari kecil ke besar atau sebaliknya.",
+                points: 1
+            },
+            {
+                id: 22,
+                question: "Sebelum melakukan sortir data di Excel, sebaiknya Anda:",
+                options: [
+                    "Memilih seluruh data yang ingin diurutkan",
+                    "Menghapus data yang tidak penting",
+                    "Menyalin data ke program lain",
+                    "Membuat grafik terlebih dahulu",
+                    "Menyimpan file sebagai PDF"
+                ],
+                correctAnswer: 0,
+                explanation: "Sebelum melakukan sortir, penting untuk memilih seluruh data yang ingin diurutkan termasuk header dan semua kolom terkait agar data tetap konsisten dan tidak terpisah.",
+                points: 1
+            },
+            {
+                id: 23,
+                question: "Cocokkan istilah Excel berikut dengan definisinya yang tepat:",
+                type: "matching",
+                pairs: [
+                    { term: "Cell", definition: "Kotak kecil tempat data dimasukkan" },
+                    { term: "Formula", definition: "Rumus yang dimulai dengan tanda =" },
+                    { term: "Worksheet", definition: "Lembar kerja dalam file Excel" },
+                    { term: "Column", definition: "Barisan vertikal dalam spreadsheet" },
+                    { term: "Row", definition: "Barisan horizontal dalam spreadsheet" }
+                ],
+                explanation: "Memahami istilah dasar Excel sangat penting untuk menggunakan aplikasi ini dengan efektif.",
+                points: 0
+            },
+            {
+                id: 24,
+                question: "Pasangkan fitur Excel dengan fungsinya:",
+                type: "matching",
+                pairs: [
+                    { term: "AutoSum", definition: "Menjumlahkan data secara otomatis" },
+                    { term: "Filter", definition: "Menyaring data berdasarkan kriteria" },
+                    { term: "Pivot Table", definition: "Meringkas dan menganalisis data" },
+                    { term: "Chart", definition: "Membuat grafik dari data" },
+                    { term: "Sort", definition: "Mengurutkan data sesuai kriteria" }
+                ],
+                explanation: "Setiap fitur Excel memiliki fungsi khusus untuk membantu pengolahan dan analisis data.",
+                points: 0
+            },
+            {
+                id: 25,
+                question: "Hubungkan jenis grafik dengan kegunaannya:",
+                type: "matching",
+                pairs: [
+                    { term: "Bar Chart", definition: "Membandingkan kategori dengan batang horizontal" },
+                    { term: "Line Chart", definition: "Menampilkan tren data dari waktu ke waktu" },
+                    { term: "Pie Chart", definition: "Menunjukkan proporsi dari keseluruhan" },
+                    { term: "Column Chart", definition: "Membandingkan kategori dengan batang vertikal" },
+                    { term: "Scatter Plot", definition: "Menampilkan hubungan antar dua variabel" }
+                ],
+                explanation: "Memilih jenis grafik yang tepat sangat penting untuk visualisasi data yang efektif.",
+                points: 0
+            },
+            {
+                id: 26,
+                question: "Fitur sortir di Excel dapat membantu Anda untuk:",
+                options: [
+                    "Mengubah warna font",
+                    "Mengurutkan data secara otomatis sesuai kriteria",
+                    "Membuat grafik",
+                    "Menambahkan komentar",
+                    "Mengunci sel"
+                ],
+                correctAnswer: 1,
+                explanation: "Fitur sortir di Excel berfungsi untuk mengurutkan data secara otomatis sesuai kriteria yang dipilih, seperti urutan alfabetis atau numerik.",
+                points: 1
+            },
+            {
+                id: 27,
+                question: "Manfaat utama menggunakan fitur sortir di Excel adalah untuk:",
+                options: [
+                    "Mengubah format angka menjadi teks",
+                    "Mengurutkan data sesuai dengan kriteria tertentu secara otomatis",
+                    "Menambahkan gambar ke dalam worksheet",
+                    "Membuat tabel pivot",
+                    "Menghapus data duplikat"
+                ],
+                correctAnswer: 1,
+                explanation: "Manfaat utama fitur sortir adalah untuk mengurutkan data sesuai dengan kriteria tertentu secara otomatis, memudahkan analisis dan pencarian data.",
+                points: 1
+            },
+            {
+                id: 28,
+                question: "Fungsi fitur sortir pada Microsoft Excel adalah untuk membantu pengguna dalam:",
+                options: [
+                    "Mengatur data agar tampil dalam urutan tertentu berdasarkan nilai atau teks",
+                    "Membuat grafik batang",
+                    "Menyisipkan komentar pada sel",
+                    "Mengunci worksheet agar tidak bisa diedit",
+                    "Mengubah warna latar belakang sel"
+                ],
+                correctAnswer: 0,
+                explanation: "Fungsi fitur sortir adalah untuk mengatur data agar tampil dalam urutan tertentu berdasarkan nilai atau teks, sehingga data menjadi lebih terorganisir.",
+                points: 1
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let points = 0;
+        let answeredQuestions = [];
+        let matchingState = {}; // Store matching game state
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function createQuestionHTML(question, questionNumber) {
+            if (question.type === 'matching') {
+                return createMatchingQuestionHTML(question, questionNumber);
+            }
+            
+            const shuffledOptions = shuffleArray(question.options.map((option, index) => ({
+                text: option,
+                originalIndex: index
+            })));
+
+            const letters = ['A', 'B', 'C', 'D', 'E'];
+            
+            return `
+                <div class="question-card p-8 text-white">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold mb-4">Soal ${questionNumber}</h2>
+                        <p class="text-lg leading-relaxed">${question.question}</p>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        ${shuffledOptions.map((option, index) => `
+                            <button 
+                                class="option-btn w-full text-left p-4 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg text-white font-medium"
+                                onclick="selectAnswer(${question.id}, ${option.originalIndex}, this)"
+                                data-question-id="${question.id}"
+                            >
+                                <span class="font-bold">${letters[index]}.</span> ${option.text}
+                            </button>
+                        `).join('')}
+                    </div>
+                    
+                    <div id="explanation-${question.id}" class="hidden mt-6 p-4 bg-white bg-opacity-20 rounded-lg">
+                        <h4 class="font-bold mb-2">?? Penjelasan:</h4>
+                        <p>${question.explanation}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createMatchingQuestionHTML(question, questionNumber) {
+            const shuffledTerms = shuffleArray([...question.pairs]);
+            const shuffledDefinitions = shuffleArray([...question.pairs]);
+            
+            return `
+                <div class="question-card p-8 text-white">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold mb-4">Soal ${questionNumber} - Mencocokkan</h2>
+                        <p class="text-lg leading-relaxed mb-4">${question.question}</p>
+                        <p class="text-sm opacity-80">Klik pada istilah di kolom kiri, lalu klik definisi yang sesuai di kolom kanan</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="font-bold mb-3 text-center">Istilah</h3>
+                            <div class="space-y-2">
+                                ${shuffledTerms.map((pair, index) => `
+                                    <button 
+                                        class="matching-term w-full text-left p-3 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg text-white font-medium transition-all"
+                                        onclick="selectTerm(${question.id}, '${pair.term}', this)"
+                                        data-term="${pair.term}"
+                                        data-question-id="${question.id}"
+                                    >
+                                        ${pair.term}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-bold mb-3 text-center">Definisi</h3>
+                            <div class="space-y-2">
+                                ${shuffledDefinitions.map((pair, index) => `
+                                    <button 
+                                        class="matching-definition w-full text-left p-3 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg text-white font-medium transition-all"
+                                        onclick="selectDefinition(${question.id}, '${pair.definition}', '${pair.term}', this)"
+                                        data-definition="${pair.definition}"
+                                        data-correct-term="${pair.term}"
+                                        data-question-id="${question.id}"
+                                    >
+                                        ${pair.definition}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="matching-status-${question.id}" class="mt-4 text-center text-sm opacity-80">
+                        Cocokkan semua pasangan untuk melanjutkan
+                    </div>
+                    
+                    <div id="explanation-${question.id}" class="hidden mt-6 p-4 bg-white bg-opacity-20 rounded-lg">
+                        <h4 class="font-bold mb-2">?? Penjelasan:</h4>
+                        <p>${question.explanation}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectAnswer(questionId, selectedIndex, buttonElement) {
+            const question = questions.find(q => q.id === questionId);
+            const allButtons = document.querySelectorAll(`[data-question-id="${questionId}"]`);
+            
+            // Disable all buttons for this question
+            allButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-opacity-30');
+            });
+
+            // Check if answer is correct
+            const isCorrect = selectedIndex === question.correctAnswer;
+            
+            if (isCorrect) {
+                buttonElement.classList.add('correct');
+                score++;
+                points += question.points;
+            } else {
+                buttonElement.classList.add('incorrect');
+            }
+
+            // Show explanation
+            document.getElementById(`explanation-${questionId}`).classList.remove('hidden');
+            
+            // Update score display
+            document.getElementById('score').textContent = score;
+            document.getElementById('points').textContent = points;
+            
+            // Mark question as answered
+            answeredQuestions.push(questionId);
+            
+            // Check if question 19 is answered to show maze game
+            if (questionId === 19) {
+                setTimeout(showMazeGame, 2000);
+            }
+            
+            // Check if all questions are answered (only count non-matching questions for score)
+            const scoredQuestions = questions.filter(q => q.type !== 'matching').length;
+            if (answeredQuestions.length === questions.length) {
+                setTimeout(showResults, 2000);
+            }
+        }
+
+        function selectTerm(questionId, term, buttonElement) {
+            // Reset previous selections for this question
+            const allTerms = document.querySelectorAll(`[data-question-id="${questionId}"].matching-term`);
+            allTerms.forEach(btn => {
+                btn.classList.remove('bg-yellow-500', 'bg-opacity-50');
+                btn.classList.add('bg-white', 'bg-opacity-20');
+            });
+            
+            // Highlight selected term
+            buttonElement.classList.remove('bg-white', 'bg-opacity-20');
+            buttonElement.classList.add('bg-yellow-500', 'bg-opacity-50');
+            
+            // Store selected term
+            if (!matchingState[questionId]) {
+                matchingState[questionId] = { selectedTerm: null, matches: [], correctMatches: 0 };
+            }
+            matchingState[questionId].selectedTerm = term;
+        }
+
+        function selectDefinition(questionId, definition, correctTerm, buttonElement) {
+            const state = matchingState[questionId];
+            if (!state || !state.selectedTerm) {
+                // Show message to select term first
+                document.getElementById(`matching-status-${questionId}`).innerHTML = 
+                    '<span class="text-yellow-300">Pilih istilah terlebih dahulu!</span>';
+                return;
+            }
+            
+            const selectedTerm = state.selectedTerm;
+            const isCorrect = selectedTerm === correctTerm;
+            
+            if (isCorrect) {
+                // Correct match
+                buttonElement.classList.remove('bg-white', 'bg-opacity-20');
+                buttonElement.classList.add('bg-green-500', 'bg-opacity-70');
+                buttonElement.disabled = true;
+                
+                // Find and disable the corresponding term
+                const termButton = document.querySelector(`[data-question-id="${questionId}"][data-term="${selectedTerm}"]`);
+                if (termButton) {
+                    termButton.classList.remove('bg-yellow-500', 'bg-opacity-50');
+                    termButton.classList.add('bg-green-500', 'bg-opacity-70');
+                    termButton.disabled = true;
+                }
+                
+                state.correctMatches++;
+                state.matches.push({ term: selectedTerm, definition: definition, correct: true });
+                
+                // Check if all matches are complete
+                const question = questions.find(q => q.id === questionId);
+                if (state.correctMatches === question.pairs.length) {
+                    document.getElementById(`matching-status-${questionId}`).innerHTML = 
+                        '<span class="text-green-300">? Semua pasangan benar!</span>';
+                    
+                    // Show explanation
+                    document.getElementById(`explanation-${questionId}`).classList.remove('hidden');
+                    
+                    // Mark as answered (but don't add to score since points = 0)
+                    answeredQuestions.push(questionId);
+                    
+                    // Check if all questions are answered
+                    if (answeredQuestions.length === questions.length) {
+                        setTimeout(showResults, 2000);
+                    }
+                } else {
+                    document.getElementById(`matching-status-${questionId}`).innerHTML = 
+                        `<span class="text-green-300">Benar! ${state.correctMatches}/${question.pairs.length} pasangan</span>`;
+                }
+            } else {
+                // Incorrect match
+                buttonElement.classList.remove('bg-white', 'bg-opacity-20');
+                buttonElement.classList.add('bg-red-500', 'bg-opacity-70');
+                
+                setTimeout(() => {
+                    buttonElement.classList.remove('bg-red-500', 'bg-opacity-70');
+                    buttonElement.classList.add('bg-white', 'bg-opacity-20');
+                }, 1000);
+                
+                document.getElementById(`matching-status-${questionId}`).innerHTML = 
+                    '<span class="text-red-300">Salah! Coba lagi.</span>';
+            }
+            
+            // Reset term selection
+            state.selectedTerm = null;
+            const allTerms = document.querySelectorAll(`[data-question-id="${questionId}"].matching-term:not(:disabled)`);
+            allTerms.forEach(btn => {
+                btn.classList.remove('bg-yellow-500', 'bg-opacity-50');
+                btn.classList.add('bg-white', 'bg-opacity-20');
+            });
+        }
+
+        function showMazeGame() {
+            // Check if maze already exists
+            if (document.getElementById('mazeGame')) {
+                return;
+            }
+            
+            const mazeHTML = `
+                <div id="mazeGame" class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                    <h2 class="text-2xl font-bold text-center mb-4 text-purple-600">?? Mini Game: Labirin Tantangan!</h2>
+                    <p class="text-center mb-4 text-gray-600">Selesaikan labirin ini untuk melanjutkan ke soal terakhir! Gunakan tombol panah atau WASD untuk bergerak.</p>
+                    
+                    <div class="flex justify-center mb-4">
+                        <canvas id="mazeCanvas" width="400" height="400" class="border-2 border-purple-300 rounded-lg"></canvas>
+                    </div>
+                    
+                    <div class="text-center">
+                        <p class="text-sm text-gray-500 mb-2">?? Start | ?? Finish | ? Dinding | ?? Pemain</p>
+                        <div id="mazeStatus" class="text-lg font-semibold text-purple-600"></div>
+                    </div>
+                </div>
+            `;
+            
+            // Find question 20 container and insert maze before it
+            const allQuestions = document.querySelectorAll('.question-card');
+            const question20Card = Array.from(allQuestions).find(card => 
+                card.querySelector('[data-question-id="20"]')
+            );
+            
+            if (question20Card) {
+                question20Card.insertAdjacentHTML('beforebegin', mazeHTML);
+                
+                // Initialize maze game after a short delay
+                setTimeout(() => {
+                    initializeMaze();
+                    // Scroll to maze
+                    document.getElementById('mazeGame').scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        }
+
+        function initializeMaze() {
+            const canvas = document.getElementById('mazeCanvas');
+            const ctx = canvas.getContext('2d');
+            const cellSize = 20;
+            const rows = 20;
+            const cols = 20;
+            
+            // Complex maze layout (1 = wall, 0 = path, 2 = start, 3 = finish)
+            const maze = [
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,2,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+                [1,1,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,1,0,1],
+                [1,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,1],
+                [1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,0,1,1],
+                [1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1],
+                [1,1,1,1,0,1,1,1,0,1,1,0,1,1,0,1,1,1,0,1],
+                [1,0,0,0,0,0,0,1,0,1,0,0,1,0,0,1,0,0,0,1],
+                [1,0,1,1,1,1,0,1,0,1,0,1,1,0,1,1,0,1,1,1],
+                [1,0,0,0,0,1,0,0,0,1,0,1,0,0,1,0,0,0,0,1],
+                [1,1,1,1,0,1,1,1,1,1,0,1,0,1,1,0,1,1,0,1],
+                [1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,1],
+                [1,0,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,0,1,1],
+                [1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,1],
+                [1,1,1,0,1,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
+                [1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,1],
+                [1,0,1,1,1,0,1,1,1,0,1,1,1,1,1,1,0,1,0,1],
+                [1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,1],
+                [1,1,1,1,1,0,1,0,1,1,1,0,1,1,1,1,1,1,3,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+            ];
+            
+            let playerX = 1;
+            let playerY = 1;
+            let gameCompleted = false;
+            
+            function drawMaze() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                for (let row = 0; row < rows; row++) {
+                    for (let col = 0; col < cols; col++) {
+                        const x = col * cellSize;
+                        const y = row * cellSize;
+                        
+                        if (maze[row][col] === 1) {
+                            // Wall
+                            ctx.fillStyle = '#4a5568';
+                            ctx.fillRect(x, y, cellSize, cellSize);
+                        } else if (maze[row][col] === 2) {
+                            // Start
+                            ctx.fillStyle = '#48bb78';
+                            ctx.fillRect(x, y, cellSize, cellSize);
+                        } else if (maze[row][col] === 3) {
+                            // Finish
+                            ctx.fillStyle = '#f56565';
+                            ctx.fillRect(x, y, cellSize, cellSize);
+                        } else {
+                            // Path
+                            ctx.fillStyle = '#f7fafc';
+                            ctx.fillRect(x, y, cellSize, cellSize);
+                        }
+                        
+                        // Grid lines
+                        ctx.strokeStyle = '#e2e8f0';
+                        ctx.strokeRect(x, y, cellSize, cellSize);
+                    }
+                }
+                
+                // Draw player
+                if (!gameCompleted) {
+                    ctx.fillStyle = '#ffd700';
+                    ctx.beginPath();
+                    ctx.arc(playerX * cellSize + cellSize/2, playerY * cellSize + cellSize/2, cellSize/3, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+            }
+            
+            function movePlayer(dx, dy) {
+                if (gameCompleted) return;
+                
+                const newX = playerX + dx;
+                const newY = playerY + dy;
+                
+                if (newX >= 0 && newX < cols && newY >= 0 && newY < rows && maze[newY][newX] !== 1) {
+                    playerX = newX;
+                    playerY = newY;
+                    
+                    // Check if reached finish
+                    if (maze[playerY][playerX] === 3) {
+                        gameCompleted = true;
+                        document.getElementById('mazeStatus').innerHTML = '?? Selamat! Labirin selesai! Lanjut ke soal terakhir!';
+                        setTimeout(() => {
+                            document.getElementById('mazeGame').style.display = 'none';
+                            // Scroll to question 20
+                            document.querySelector('[data-question-id="20"]').scrollIntoView({ behavior: 'smooth' });
+                        }, 2000);
+                    }
+                    
+                    drawMaze();
+                }
+            }
+            
+            // Keyboard controls
+            document.addEventListener('keydown', function(e) {
+                switch(e.key) {
+                    case 'ArrowUp':
+                    case 'w':
+                    case 'W':
+                        e.preventDefault();
+                        movePlayer(0, -1);
+                        break;
+                    case 'ArrowDown':
+                    case 's':
+                    case 'S':
+                        e.preventDefault();
+                        movePlayer(0, 1);
+                        break;
+                    case 'ArrowLeft':
+                    case 'a':
+                    case 'A':
+                        e.preventDefault();
+                        movePlayer(-1, 0);
+                        break;
+                    case 'ArrowRight':
+                    case 'd':
+                    case 'D':
+                        e.preventDefault();
+                        movePlayer(1, 0);
+                        break;
+                }
+            });
+            
+            // Initial draw
+            drawMaze();
+            document.getElementById('mazeStatus').innerHTML = 'Gunakan tombol panah atau WASD untuk bergerak ke kotak merah!';
+        }
+
+        function showResults() {
+            const studentName = document.getElementById('studentName').value || 'Tidak diisi';
+            const studentClass = document.getElementById('studentClass').value || 'Tidak diisi';
+            
+            document.getElementById('quizContainer').classList.add('hidden');
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('finalScore').textContent = `${score}/${questions.length}`;
+            document.getElementById('finalPoints').textContent = points;
+            document.getElementById('displayName').textContent = studentName;
+            document.getElementById('displayClass').textContent = studentClass;
+        }
+
+        function sendResultsToEmail() {
+            const studentName = document.getElementById('studentName').value || 'Tidak diisi';
+            const studentClass = document.getElementById('studentClass').value || 'Tidak diisi';
+            const finalScore = `${score}/${questions.length}`;
+            const finalPoints = points;
+            const percentage = Math.round((score / questions.length) * 100);
+            
+            // Create email content
+            const subject = `Hasil Kuis Berpikir Komputasional - ${studentName}`;
+            const body = `Hasil Kuis Berpikir Komputasional
+
+Informasi Siswa:
+- Nama: ${studentName}
+- Kelas: ${studentClass}
+
+Hasil Kuis:
+- Skor: ${finalScore}
+- Total Poin: ${finalPoints}/73
+- Persentase: ${percentage}%
+
+Catatan: Soal 23-25 adalah latihan mencocokkan (tidak dinilai)
+
+Tanggal: ${new Date().toLocaleDateString('id-ID')}
+Waktu: ${new Date().toLocaleTimeString('id-ID')}
+
+---
+Dikirim otomatis dari sistem kuis online`;
+
+            // Create mailto link
+            const mailtoLink = `mailto:andyakbar108@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            
+            // Open email client
+            window.location.href = mailtoLink;
+            
+            // Show success message
+            document.getElementById('emailStatus').classList.remove('hidden');
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            points = 0;
+            answeredQuestions = [];
+            matchingState = {};
+            
+            document.getElementById('score').textContent = '0';
+            document.getElementById('points').textContent = '0';
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('quizContainer').classList.remove('hidden');
+            
+            initializeQuiz();
+        }
+
+        function initializeQuiz() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = '';
+            
+            questions.forEach((question, index) => {
+                container.innerHTML += createQuestionHTML(question, index + 1);
+            });
+        }
+
+        // Initialize the quiz when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeQuiz();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'978d7a1c170caedc',t:'MTc1NjgyMTAzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
